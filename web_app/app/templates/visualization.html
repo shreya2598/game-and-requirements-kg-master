@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <meta charset="UTF-8">
+		<title>Game Recommendations Engine</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="static/css/w3.css"/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+		<script>
+      	$(document).ready(function() {
+
+      		$("#class_name").change(function () {
+				var cur_class_name = $("#class_name").val();
+
+				cur_url = "http://127.0.0.1:5000/getPropertiesForClass?class_name=" + cur_class_name;
+				$.get(cur_url, function(data, status){
+					vals = data["vals"]
+
+					html_content = "<option value=\"\" disabled selected>Choose the property name</option>"
+					for(i=0; i<vals.length; i++){
+						html_content = html_content + "<option value=\"" + vals[i] + "\">" + vals[i] + "</option>"
+					}
+
+					$("#property_name").html(html_content)
+				});
+
+			});
+
+			$('#visualizeBtn').click(function(){
+
+				var class_name = $("#class_name").val();
+				var property_name = $("#property_name").val();
+
+				var cur_url = "http://127.0.0.1:5000/getVisualizationData?class_name="+class_name+"&property_name="+property_name;
+				console.log(cur_url);
+
+				Plotly.d3.json(cur_url).get(function (err, rows) {
+
+					var data_type = rows["data_type"]
+					console.log(data_type)
+
+					if(data_type === "continuous") {
+						var x_vals = rows["x_vals"];
+
+						console.log(x_vals);
+
+						var data_1 = [
+							{
+								x: x_vals,
+								type: 'histogram'
+							}
+						];
+
+						var layout_1 = {
+							  xaxis: {title: "Value"},
+							  yaxis: {title: "Count"}
+						};
+
+
+						$("#plot_1_div").html("<h2> Histogram Plot </h2>");
+						Plotly.newPlot('plot_1', data_1, layout_1);
+
+						// Make the other plot empty
+						$("#plot_2_div").html("")
+						$("#plot_2").html("")
+					}
+					else {
+						var x_vals = rows["x_vals"];
+						var y_vals = rows["y_vals"];
+
+						console.log(x_vals);
+						console.log(y_vals);
+
+						var data_2 = [
+							{
+								x: x_vals,
+								y: y_vals,
+								type: 'bar'
+							}
+						];
+
+						var layout_2 = {
+							  xaxis: {title: "Value"},
+							  yaxis: {title: "Count"}
+						};
+
+						$("#plot_1_div").html("<h2> Bar Plot </h2>");
+						Plotly.newPlot('plot_1', data_2, layout_2);
+
+						var data_3 = [{
+							values: y_vals,
+							labels: x_vals,
+							type: 'pie',
+							transforms: [{
+								type: 'sort',
+								target: 'values',
+								order: 'descending'
+							}]
+						}];
+
+						$("#plot_2_div").html("<h2> Pie Chart </h2>")
+						Plotly.newPlot('plot_2', data_3);
+					}
+				});
+			});
+		});
+
+		</script>
+
+	</head>
+	<body class="w3-light-gray">
+
+		<!--Nav Bar-->
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<ul class="nav navbar-nav">
+					<li><a href="/">Dash Board</a></li>
+					<li><a href="/query">Query Page</a></li>
+					<li class="active"><a href="/visualize">Visualizations</a></li>
+					<li><a href="/game">Game Page</a></li>
+				</ul>
+			</div>
+		</nav>
+
+		<div class="row">
+			<div class="col-lg-2"></div>
+			<div class="col-lg-8">
+				<div class="w3-container w3-dark-gray w3-padding">
+				  <h2>Visualize the Class properties</h2>
+				</div>
+				<div class="w3-card-4 w3-gray">
+					<form class="w3-container w3-padding-32">
+						<label>Class Name:</label>
+						<select class="w3-select" name="class_name" id="class_name">
+						  <option value="" disabled selected>Choose the class name</option>
+							{% if class_list %}
+								{% for i in class_list %}
+									<option value="{{i}}">{{i}}</option>
+								{% endfor %}
+							{% endif %}
+						</select>
+
+						<label>Property Name:</label>
+						<select class="w3-select" name="property_name" id="property_name">
+						  <option value="" disabled selected>Choose the property name</option>
+						</select>
+					</form>
+					<button class="w3-btn w3-blue-grey w3-right w3-margin-top w3-round" id="visualizeBtn">Visualize!</button>
+				</div>
+			</div>
+			<div class="col-lg-2"></div>
+		</div>
+
+		<div class="row w3-padding-64">
+			<div class="col-lg-2"></div>
+			<div class="col-lg-8">
+
+				<div id="plot_1_div" class="w3-container w3-dark-gray"></div>
+
+				<div id="plot_1"></div>
+
+			</div>
+			<div class="col-lg-2"></div>
+		</div>
+
+		<div class="row w3-padding-64">
+			<div class="col-lg-2"></div>
+			<div class="col-lg-8">
+
+				<div id="plot_2_div" class="w3-container w3-dark-gray"></div>
+
+				<div id="plot_2"></div>
+
+			</div>
+			<div class="col-lg-2"></div>
+		</div>
+
+	</body>
+</html>

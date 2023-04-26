@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <meta charset="UTF-8">
+		<title>Game Recommendations Engine</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="static/css/w3.css"/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+		<script>
+      	$(document).ready(function() {
+
+			$("#formBtn").click(function () {
+				cur_url = "http://127.0.0.1:5000/storeConfig"
+				$.post(cur_url, $("#device_config_form").serialize()).done(function (data, status) {
+					if(status === "success"){
+						$("#result_info").html(data)
+					}
+				});
+			});
+
+		});
+      	</script>
+	</head>
+	<body class="w3-light-gray">
+
+		<!--Nav Bar-->
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="/">Dash Board</a></li>
+					<li><a href="/query">Query Page</a></li>
+					<li><a href="/visualize">Visualizations</a></li>
+					<li><a href="/game">Game Page</a></li>
+				</ul>
+			</div>
+		</nav>
+
+
+		<div class="row">
+			<div class="col-lg-3"></div>
+			<div class="col-lg-6">
+				<div class="w3-container w3-dark-gray w3-padding">
+				  <h2>Please enter your device configuration</h2>
+				</div>
+				<div class="w3-card-4 w3-gray">
+					<form class="w3-container w3-padding-32" id="device_config_form">
+						<label>Available Hard Disk Space:</label>
+						<input name="hdd_space" class="w3-input w3-border w3-round w3-light-gray" type="text">
+
+						<label>Available RAM:</label>
+						<input name="ram" class="w3-input w3-border w3-round w3-light-gray" type="text">
+
+						<label>Processor:</label>
+						<input name="processor" class="w3-input w3-border w3-round w3-light-gray" type="text">
+
+						<label>Graphics Card:</label>
+						<input name="graphics_card" class="w3-input w3-border w3-round w3-light-gray" type="text">
+					</form>
+					<button id="formBtn" class="w3-btn w3-blue-grey w3-right w3-margin-top w3-round">Register your device configuration!</button>
+				</div>
+			</div>
+			<div class="col-lg-3"></div>
+		</div>
+
+		<div class="row w3-padding-64">
+			<div class="col-lg-3"></div>
+			<div class="col-lg-6">
+				<div id="result_info" class="w3-container">
+				</div>
+			</div>
+			<div class="col-lg-3"></div>
+		</div>
+
+	</body>
+</html>

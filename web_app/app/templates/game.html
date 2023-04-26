@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <meta charset="UTF-8">
+		<title>Game Recommendations Engine</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="static/css/w3.css"/>
+		<script src="static/js/jquery.min.js"></script>
+		<script src="static/js/skel.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+		<script type="text/javascript" href="static/js/bootstrap.min.js"></script>
+		<script type="text/javascript" href="static/js/jquery.min.js"></script>
+	</head>
+	<body class="w3-light-gray">
+
+		<!--Nav Bar-->
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<ul class="nav navbar-nav">
+					<li><a href="/">Dash Board</a></li>
+					<li><a href="/query">Query Page</a></li>
+					<li><a href="/visualize">Visualizations</a></li>
+					<li class="active"><a href="/game">Game Page</a></li>
+				</ul>
+			</div>
+		</nav>
+
+        <!-- Page Content -->
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2"></div>
+                <div class="col-lg-8">
+                    <div class="w3-card-4 w3-padding w3-gray">
+                        <div class="w3-container">
+                            <div class="w3-row">
+                                <header class="w3-dark-gray w3-center">
+                                    <h1>{{game_info.name}}</h1>
+                                </header>
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Game Summary:</label>
+                                {{game_info.game_summary}}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Released Year:</label>
+                                {{game_info.released_year}}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Supported Platforms:</label>
+                                {{game_info.platform_name}}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Developers:</label>
+                                {{game_info.developer_name}}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Publishers:</label>
+                                {{game_info.publisher_name}}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Game Modes:</label>
+                                {{game_info.game_mode_label}}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Genres:</label>
+                                {{game_info.genre_label}}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Themes:</label>
+                                {{game_info.theme_label}}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Rating:</label>
+                                {% if game_info.rating != "-1.0" %}
+                                    {{game_info.rating}}
+                                {% else %}
+                                    Not Available
+                                {% endif %}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Seller:</label>
+                                {{game_info.seller_name}}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Price:</label>
+                                {% if game_info.price != "Not Available" %}
+                                    {{game_info.price}} USD
+                                {% else %}
+                                    {{game_info.price}}
+                                {% endif %}
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Discount:</label>
+                                {% if game_info.discount != "Not Available" %}
+                                    {{game_info.discount}} % OFF
+                                {% else %}
+                                    {{game_info.discount}}
+                                {% endif %}
+
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Purchase Link:</label>
+                                <a href="{{game_info.url}}">{{game_info.url}}</a>
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>Game Minimum Requirements:</label>
+                                <ul>
+                                    {% if game_req_list %}
+                                        {% for cur_req in game_req_list %}
+                                            <li>{{cur_req}}</li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li>Not Available</li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            <div class="w3-row w3-margin-top">
+                                <label>User Device Configuration:</label>
+                                <ul>
+                                    <li>{{device_config_str}}</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2"></div>
+            </div>
+
+            <div class="row w3-padding-32"><br><br></div>
+            <div class="row">
+                <h3>More to consider:</h3>
+            </div>
+
+            <div class="row w3-padding-32">
+
+                {% if rec_games_list %}
+                    {% for cur_game in rec_games_list %}
+                        <div class="col-lg-2">
+                            <div class="w3-card-4 w3-gray w3-padding">
+                                <h5>{{cur_game.game_name}}</h5>
+                                <a href="http://127.0.0.1:5000/game?game_id={{cur_game.game_id}}">games#{{cur_game.game_id}}</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+            </div>
+        </div>
+
+	</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <meta charset="UTF-8">
+		<title>Game Recommendations Engine</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="static/css/w3.css"/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="https://table-sortable.now.sh/table-sortable.js"></script>
+
+		<script>
+      	$(document).ready(function() {
+
+			$("#searchBtn").click(function () {
+				cur_url = "http://127.0.0.1:5000/queryData";
+				$.post(cur_url, $("#search_form").serialize()).done(function (data, status) {
+					if(status === "success"){
+						var table_data = data["data"];
+						var table_cols = {};
+						for(var i=0; i<data["cols"].length; i++){
+							var col_name = data["cols"][i];
+							table_cols[col_name] = col_name;
+						}
+						console.log(table_cols);
+
+						$("#table-header").html("<h2 class=\"w3-center\">Results</h2>")
+
+						var table = $('#table-sortable').tableSortable({
+							data: table_data,
+							columns: table_cols,
+							rowsPerPage: 10,
+							pagination: true,
+							sorting: true,
+
+							formatCell: function(row, key) {
+								if (key === 'game_id') {
+									var a_ele = document.createElement("a");
+									var split_list = row[key].split("#");
+									var game_id = split_list[split_list.length-1];
+									var cur_url = "http://127.0.0.1:5000/game?game_id=" + game_id;
+
+									$(a_ele).attr("href", cur_url);
+									$(a_ele).text(row[key]);
+
+									return a_ele;
+								}
+								// Finally return cell for rest of columns;
+								return row[key];
+							},
+
+						});
+					}
+				});
+			});
+
+		});
+      	</script>
+	</head>
+	<body class="w3-light-gray">
+
+		<!--Nav Bar-->
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<ul class="nav navbar-nav">
+					<li><a href="/">Dash Board</a></li>
+					<li class="active"><a href="/query">Query Page</a></li>
+					<li><a href="/visualize">Visualizations</a></li>
+					<li><a href="/game">Game Page</a></li>
+				</ul>
+			</div>
+		</nav>
+
+		<div class="row">
+			<div class="col-lg-2"></div>
+			<div class="col-lg-8">
+				<div class="w3-container w3-dark-gray w3-padding">
+				  <h2 class="w3-center">Search our Game and Requirements - KG</h2>
+				</div>
+				<div class="w3-card-4 w3-gray w3-padding-32">
+					<form id="search_form" class="w3-container">
+
+						<div class="w3-row-padding w3-padding">
+							<div class="w3-col l4">
+								<label>Game Name</label>
+								<input name="game_name" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+
+							<div class="w3-col l4">
+								<label>Released Year</label>
+								<input name="released_year" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+
+							<div class="w3-col l4">
+								<label>Minimum Rating</label>
+								<input name="min_rating" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+						</div>
+
+						<div class="w3-row-padding w3-padding">
+							<div class="w3-col l12">
+								<label>Supported Platforms</label>
+								<input name="platform" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+						</div>
+
+						<div class="w3-row-padding w3-padding">
+							<div class="w3-col l4">
+								<label>Developer</label>
+								<input name="developer" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+
+							<div class="w3-col l4">
+								<label>Publisher</label>
+								<input name="publisher" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+
+							<div class="w3-col l4">
+								<label>Seller</label>
+								<input name="seller" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+						</div>
+
+						<div class="w3-row-padding w3-padding">
+							<div class="w3-col l4">
+								<label>Genre</label>
+								<select class="w3-select w3-border w3-round w3-light-gray" name="genre" id="genre">
+								  <option value="" selected>Select the Genre</option>
+									{% if genre_list %}
+										{% for i in genre_list %}
+											<option value="{{i}}">{{i}}</option>
+										{% endfor %}
+									{% endif %}
+								</select>
+							</div>
+
+							<div class="w3-col l4">
+								<label>Theme</label>
+								<select class="w3-select w3-border w3-round w3-light-gray" name="theme" id="theme">
+								  <option value="" selected>Select the Theme</option>
+									{% if theme_list %}
+										{% for i in theme_list %}
+											<option value="{{i}}">{{i}}</option>
+										{% endfor %}
+									{% endif %}
+								</select>
+							</div>
+
+							<div class="w3-col l4">
+								<label>Game Mode</label>
+								<select class="w3-select w3-border w3-round w3-light-gray" name="game_mode" id="game_mode">
+								  <option value="" selected>Select the Game Mode</option>
+									{% if game_mode_list %}
+										{% for i in game_mode_list %}
+											<option value="{{i}}">{{i}}</option>
+										{% endfor %}
+									{% endif %}
+								</select>
+							</div>
+						</div>
+
+						<div class="w3-row-padding w3-padding">
+							<div class="w3-col l3">
+								<label>Min Price</label>
+								<input name="min_price" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+
+							<div class="w3-col l3">
+								<label>Max Price</label>
+								<input name="max_price" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+
+							<div class="w3-col l3">
+								<label>Min Discount</label>
+								<input name="min_discount" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+
+							<div class="w3-col l3">
+								<label>Max Discount</label>
+								<input name="max_discount" class="w3-input w3-border w3-round w3-light-gray" type="text">
+							</div>
+						</div>
+
+						<div class="w3-row-padding">
+							<div class="w3-col l12">
+								<input class="w3-radio" type="radio" name="support" value="all" checked>
+								<label>Show all games</label>
+							</div>
+						</div>
+
+						<div class="w3-row-padding">
+							<div class="w3-col l12">
+								<input class="w3-radio" type="radio" name="support" value="only_supported">
+							<label>Show games supported by my device</label>
+							</div>
+						</div>
+
+						<div class="w3-row-padding">
+							<div class="w3-col l12">
+								<input class="w3-radio" type="radio" name="support" value="only_not_supported">
+								<label>Show games not supported by my device</label>
+							</div>
+						</div>
+
+					</form>
+
+					<div class="w3-row-padding w3-padding">
+						<div class="w3-col l12">
+							<button id="searchBtn" class="w3-btn w3-blue-grey w3-right w3-round">Search</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<div class="col-lg-2"></div>
+		</div>
+
+		<div class="row w3-padding-64">
+			<div class="col-lg-2"></div>
+			<div class="col-lg-8">
+				<div class="w3-container w3-dark-gray" id="table-header"></div>
+				<div class="w3-card-4 w3-gray" id="table-sortable">
+				</div>
+			</div>
+			<div class="col-lg-2"></div>
+		</div>
+
+	</body>
+</html>
